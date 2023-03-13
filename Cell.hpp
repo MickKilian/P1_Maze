@@ -6,14 +6,14 @@
 class	Cell {
 	public:
 		Cell();
-		Cell(int, int, bool, bool, bool);
+		Cell(int, int, int, bool, bool);
 		~Cell(void);
 		int		getvalue();
-		bool	getseen();
+		int		getnbseen();
 		bool	getwallLeft();
 		bool	getwallUp();
 		void	setvalue(int value);
-		void	setseen(bool seen);
+		void	setnbseen(int nb);
 		void	setwallLeft(bool wall);
 		void	setwallUp(bool wall);
 		void	display();
@@ -21,7 +21,7 @@ class	Cell {
 	private:
 		int		_id;
 		int		_value;
-		bool	_seen;
+		int		_nbseen;
 		bool	_wallLeft;
 		bool	_wallUp;
 };
