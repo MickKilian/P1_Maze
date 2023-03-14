@@ -2,8 +2,13 @@
 
 int	main() {
 	Maze*	maze = newMaze(12, 12);
+	time_t	startingtime;
 
+	time(&startingtime);
+	maze->settimer(startingtime);
 	maze->create();
+	time(&startingtime);
+	maze->settimer(startingtime);
 	maze->explore();
 	delete maze;
 	return 0;

@@ -2,12 +2,14 @@
 #define MAZE_H
 
 #include "Cell.hpp"
+#include "Player.hpp"
 #include <vector>
 #include <string>
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <unistd.h>
+#include <time.h>		/* time_t, struct tm, difftime, time, mktime */
 
 #define RED				"\x1b[31m"
 #define BOLDRED			"\x1b[31;1m"
@@ -23,6 +25,9 @@
 #define WHITE			"\x1b[37m"
 #define RESET			"\x1b[0m"
 
+#define SPEED			500000
+#define MAKE			10000
+
 class	Maze {
 	public:
 		Maze();
@@ -30,14 +35,19 @@ class	Maze {
 		~Maze(void);
 		bool	getmode(void);
 		void	setmode(bool mode);
+		void	settimer(time_t);
 		void	create(void);
 		void	explore(void);
+		int		isinsidemaze(int);
 
 	private:
 		int					_sizex;
 		int					_sizey;
 		std::vector<Cell>	_content;
+		Player				_player1;
 		bool				_mode;
+		time_t				_timer;
+		int					_deadborder;
 		void 				_display(int id);
 		int					_idToX(int id);
 		int					_idToY(int id);

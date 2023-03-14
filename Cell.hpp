@@ -7,7 +7,7 @@ class	Cell {
 	public:
 		Cell();
 		Cell(int, int, int, bool, bool);
-		~Cell(void);
+		~Cell();
 		int		getvalue();
 		int		getnbseen();
 		bool	getwallLeft();

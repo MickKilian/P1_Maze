@@ -16,12 +16,16 @@ Maze::~Maze() {
 	//std::cout << "A maze of size : " << _sizex << "x" << _sizey << " is deleted" << std::endl;
 }
 
-bool Maze::getmode(void) {
+bool	Maze::getmode(void) {
 	return (_mode);
 }
 
-void Maze::setmode(bool mode) {
+void	Maze::setmode(bool mode) {
 	_mode = mode;
+}
+
+void	Maze::settimer(time_t timer) {
+	_timer = timer;
 }
 
 void	Maze::create(void) {
@@ -31,48 +35,22 @@ void	Maze::create(void) {
 
 	srand(time(0));
 	while (k) {
-//		std::cout << "********************************k = " << k << std::endl;
 		Maze::_display(-1);
 		randcell = rand() % (_sizex * _sizey);
 		randdir = rand() % 2;
-//		std::cout << "Random_cell : " << randcell << " (" << _idToX(randcell) << "x" << _idToY(randcell) << ")" << std::endl;
-//			std::cout <<  "   Wall : " << randdir << std::endl;
-//			std::cout <<  "   Value 1st cell " << this->_content[randcell].getvalue() << std::endl;
-//			std::cout <<  "   Value LEFT cell " << this->_content[randcell - 1].getvalue() << std::endl;
-//			std::cout <<  "   Value UP cell " << this->_content[randcell - _sizex].getvalue() << std::endl;
 		if (randdir == 0 && _idToX(randcell) != 0 && _content[randcell].getvalue() != _content[randcell - 1].getvalue()) {
-//			std::cout <<  "   Removing wallLeft" << std::endl;
 			k--;
 			this->_content[randcell].setnbseen(0);
-//			std::cout <<  "   Value 1st cell " << this->_content[randcell].getvalue() << std::endl;
-//			std::cout <<  "   Value LEFT cell " << this->_content[randcell - 1].getvalue() << std::endl;
-//			std::cout <<  "   REMOVING WALL" << std::endl;
 			this->_content[randcell].setwallLeft(false);
 			Maze::_changegroupvalue(_max(this->_content[randcell - 1].getvalue(), this->_content[randcell].getvalue()), 
 					_min(this->_content[randcell - 1].getvalue(), this->_content[randcell].getvalue()));
-//			std::cout <<  "   Value 1st cell " << this->_content[randcell].getvalue() << std::endl;
-//			std::cout <<  "   Value 2nd cell " << this->_content[randcell - 1].getvalue() << std::endl;
-//			std::cout <<  "   Seen : " << this->_content[randcell].getseen() << std::endl;
-//			std::cout <<  "   wallLeft : " << this->_content[randcell].getwallLeft() << std::endl;
-//			std::cout <<  "   wallUp : " << this->_content[randcell].getwallUp() << std::endl;
-//			std::cout <<  std::endl;
 		}
 		else if (randdir == 1 && _idToY(randcell) != 0 && _content[randcell].getvalue() != _content[randcell - _sizex].getvalue()) {
-//			std::cout <<  "   Removing wallUp" << std::endl;
 			k--;
 			this->_content[randcell].setnbseen(0);
-//			std::cout <<  "   Value 1st cell " << this->_content[randcell].getvalue() << std::endl;
-//			std::cout <<  "   Value UP cell " << this->_content[randcell - _sizex].getvalue() << std::endl;
-//			std::cout <<  "   REMOVING WALL" << std::endl;
 			this->_content[randcell].setwallUp(false);
 			Maze::_changegroupvalue(_max(this->_content[randcell - _sizex].getvalue(), this->_content[randcell].getvalue()), 
 					_min(this->_content[randcell - _sizex].getvalue(), this->_content[randcell].getvalue()));
-//			std::cout <<  "   Value 1st cell " << this->_content[randcell].getvalue() << std::endl;
-//			std::cout <<  "   Value 2nd cell " << this->_content[randcell - _sizex].getvalue() << std::endl;
-//			std::cout <<  "   Seen : " << this->_content[randcell].getseen() << std::endl;
-//			std::cout <<  "   wallLeft : " << this->_content[randcell].getwallLeft() << std::endl;
-//			std::cout <<  "   wallUp : " << this->_content[randcell].getwallUp() << std::endl;
-//			std::cout <<  std::endl;
 		}
 	}
 	Maze::_display(-1);
@@ -82,20 +60,28 @@ void	Maze::create(void) {
 void	Maze::_display(int id) {
 	std::string	colorgrid;
 	std::string	colornumbers;
+	std::string	truecolorgrid;
+	std::string	truecolornumbers;
+	time_t		currenttime;
 
+	time(&currenttime);
 	if (_mode)
 		colorgrid = GREEN;
 	else
 		colorgrid = MAGENTA;
-	usleep(50000);
+	usleep(MAKE);
 	std::cout << std::endl;
 	std::cout << std::endl;
 	std::cout << std::endl;
 	for (int j = 0; j < _sizey; ++j) {
 		std::cout << std::setw(2) << " ";
 		for (int i = 0; i < _sizex; ++i) {
-			if (_content[i + j * _sizex].getwallUp()) {
-				std::cout << colorgrid << std::setw(6) << "______" << RESET;
+			if (_content[i + j * _sizex].getwallUp() || i < _deadborder || j <= _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
+				if (i < _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - _deadborder)
+					truecolorgrid = BLUE;
+				else
+					truecolorgrid = colorgrid;
+				std::cout << truecolorgrid << std::setw(6) << "______" << RESET;
 				std::cout << std::setw(2) << " ";
 			}
 			else {
@@ -105,23 +91,35 @@ void	Maze::_display(int id) {
 		}
 		std::cout << std::endl;
 		for (int i = 0; i < _sizex; ++i) {
-			if (_content[i + j * _sizex].getwallLeft()) {
-				std::cout << colorgrid << std::setw(2) << "|" << RESET;
+			if (_content[i + j * _sizex].getwallLeft() || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
+				if (i < _deadborder || j < _deadborder || i > _sizex -_deadborder || j > _sizey - 1 - _deadborder)
+					truecolorgrid = BLUE;
+				else
+					truecolorgrid = colorgrid;
+				std::cout << truecolorgrid << std::setw(2) << "|" << RESET;
 			}
 			else {
 				std::cout << std::setw(2) << " ";
 			}
 			std::cout << std::setw(6) << " ";
 		}
-		std::cout << colorgrid << std::setw(2) << "|" << RESET;
+		if (_deadborder)
+			truecolorgrid = BLUE;
+		else
+			truecolorgrid = colorgrid;
+		std::cout << truecolorgrid << std::setw(2) << "|" << RESET;
 		std::cout << std::endl;
 		for (int i = 0; i < _sizex; ++i) {
 			if (_mode)
 				colornumbers = BOLDYELLOW;
 			else
 				colornumbers = Maze::_getcolor(_content[i + j * _sizex].getvalue());
-			if (_content[i + j * _sizex].getwallLeft()) {
-				std::cout << colorgrid << std::setw(2) << "|" << RESET;
+			if (_content[i + j * _sizex].getwallLeft() || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
+				if (i < _deadborder || j < _deadborder || i > _sizex -_deadborder || j > _sizey - 1 - _deadborder)
+					truecolorgrid = BLUE;
+				else
+					truecolorgrid = colorgrid;
+				std::cout << truecolorgrid << std::setw(2) << "|" << RESET;
 			}
 			else {
 				std::cout << std::setw(2) << " ";
@@ -134,10 +132,14 @@ void	Maze::_display(int id) {
 					//std::cout << BOLDYELLOW << std::setw(2) << _content[i + j * _sizex].getvalue() << RESET;
 					std::cout << std::setw(3) << "   ";
 				else {
-					if (_content[i + j * _sizex].getvalue() == 0)
-						std::cout << colornumbers << std::setw(3) << "o" << RESET;
+					if (i < _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder)
+						truecolornumbers = BLUE;
 					else
-						std::cout << colornumbers << std::setw(3) << _content[i + j * _sizex].getvalue() << RESET;
+						truecolornumbers = colornumbers;
+					if (_content[i + j * _sizex].getvalue() == 0)
+						std::cout << truecolornumbers << std::setw(3) << "o" << RESET;
+					else
+						std::cout << truecolornumbers << std::setw(3) << _content[i + j * _sizex].getvalue() << RESET;
 				}
 				std::cout << std::setw(2) << " ";
 			}
@@ -148,23 +150,45 @@ void	Maze::_display(int id) {
 				//std::cout << MAGENTA << std::setw(6) << "   o  " << RESET;
 			}
 		}
-		std::cout << colorgrid << std::setw(2) << "|" << RESET;
+		if (_deadborder)
+			truecolorgrid = BLUE;
+		else
+			truecolorgrid = colorgrid;
+		std::cout << truecolorgrid << std::setw(2) << "|" << RESET;
+		if (j == 0)
+			std::cout << colorgrid << std::setw(4) << difftime(currenttime, _timer) << " s" << RESET;
+		if (_mode && j == 1)
+			std::cout << WHITE << std::setw(4) << _player1.getnbcoins() << " point(s)" << RESET;
 		std::cout << std::endl;
 		for (int i = 0; i < _sizex; ++i) {
-			if (_content[i + j * _sizex].getwallLeft()) {
-				std::cout << colorgrid << std::setw(2) << "|" << RESET;
+			if (_content[i + j * _sizex].getwallLeft() || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
+				if (i < _deadborder || j < _deadborder || i > _sizex -_deadborder || j > _sizey - 1 - _deadborder)
+					truecolorgrid = BLUE;
+				else
+					truecolorgrid = colorgrid;
+				std::cout << truecolorgrid << std::setw(2) << "|" << RESET;
 			}
 			else {
 				std::cout << std::setw(2) << " ";
 			}
 			std::cout << std::setw(6) << " ";
 		}
-		std::cout << colorgrid << std::setw(2) << "|" << RESET;
+		if (_deadborder)
+			truecolorgrid = BLUE;
+		else
+			truecolorgrid = colorgrid;
+		std::cout << truecolorgrid << std::setw(2) << "|" << RESET;
+		if (j == 0)
+			std::cout << colorgrid << std::setw(4) << _deadborder << " dead borders" << RESET;
 		std::cout << std::endl;
 	}
 	std::cout << std::setw(2) << " ";
 	for (int i = 0; i < _sizex; ++i) {
-		std::cout << colorgrid << std::setw(6) << "______" << RESET;
+		if (_deadborder)
+			truecolorgrid = BLUE;
+		else
+			truecolorgrid = colorgrid;
+		std::cout << truecolorgrid << std::setw(6) << "______" << RESET;
 		std::cout << std::setw(2) << " ";
 	}
 	std::cout << std::endl;
@@ -172,47 +196,86 @@ void	Maze::_display(int id) {
 }
 
 void	Maze::explore(void) {
-	_findNextCell(0, -1);
+	int	retid;
+
+	retid = 0;
+	while (1) {
+		std::cout << "retid : " << retid << std::endl;
+		retid = _findNextCell(retid, -1);
+	}
+
+	std::cout << "Congratulations, player1 has collected " << _player1.getnbcoins() << " coins." << std::endl;
 }
 
 int	Maze::_findNextCell(int id, int fromdir) {
-	//std::cout << "Current cell : " << id << std::endl;
-	//std::cout << "from dir : " << fromdir << std::endl;
-	//std::cout << "reverse : " << reverse << std::endl;
+	time_t		currenttime;
+	bool		cont = true;
+	int			lastid = 0;
+
+	time(&currenttime);
+	_deadborder = difftime(currenttime, _timer) / 20;
 	_content[id].setnbseen(_content[id].getnbseen() + 1);
+	if (_content[id].getnbseen() == 1)
+		_player1.setnbcoins(_player1.getnbcoins() + 1);
 	_display(id);
-	usleep(100000);
-		// try Up
-		if (fromdir != 0 && !_content[id].getwallUp()) {
-			_findNextCell(_getidwithdir(id, 0), 2);
-			_content[id].setnbseen(_content[id].getnbseen() + 1);
-			_display(id);
-			usleep(100000);
-		}
+	usleep(SPEED);
+	while (cont) {
 		// try Right
-		if (fromdir != 1 && _idToX(id) < _sizex - 1 && !_content[_getidwithdir(id, 1)].getwallLeft()) {
+		if (isinsidemaze(id) && fromdir != 1 && _idToX(id) < _sizex - 1 -_deadborder && !_content[_getidwithdir(id, 1)].getwallLeft()) {
 			_findNextCell(_getidwithdir(id, 1), 3);
+			if (!isinsidemaze(id)) {
+				lastid = id;
+				break;
+			}
 			_content[id].setnbseen(_content[id].getnbseen() + 1);
 			_display(id);
-			usleep(100000);
+			usleep(SPEED);
 		}
 		// try Down
-		if (fromdir != 2 && _idToY(id) < _sizey - 1 && !_content[_getidwithdir(id, 2)].getwallUp()) {
+		if (isinsidemaze(id) && fromdir != 2 && _idToY(id) < _sizey - 1 - _deadborder && !_content[_getidwithdir(id, 2)].getwallUp()) {
 			_findNextCell(_getidwithdir(id, 2), 0);
+			if (!isinsidemaze(id)) {
+				lastid = id;
+				break;
+			}
 			_content[id].setnbseen(_content[id].getnbseen() + 1);
 			_display(id);
-			usleep(100000);
+			usleep(SPEED);
 		}
 		// try Left
-		if (fromdir != 3 && !_content[id].getwallLeft()) {
+		if (isinsidemaze(id) && fromdir != 3 && _idToX(id) > _deadborder && !_content[id].getwallLeft()) {
 			_findNextCell(_getidwithdir(id, 3), 1);
+			if (!isinsidemaze(id)) {
+				lastid = id;
+				break;
+			}
 			_content[id].setnbseen(_content[id].getnbseen() + 1);
 			_display(id);
-			usleep(100000);
+			usleep(SPEED);
+		}
+		// try Up
+		if (isinsidemaze(id) && fromdir != 0 && _idToY(id) > _deadborder && !_content[id].getwallUp()) {
+			_findNextCell(_getidwithdir(id, 0), 2);
+			if (!isinsidemaze(id)) {
+				lastid = id;
+				break;
+			}
+			_content[id].setnbseen(_content[id].getnbseen() + 1);
+			_display(id);
+			usleep(SPEED);
 		}
 		//_display(_getidwithdir(id, fromdir));
-	_content[id].setnbseen(4);
-	return (-1);
+		_content[id].setnbseen(4);
+		cont = false;
+	}
+	return (lastid);
+}
+
+int		Maze::isinsidemaze(int id) {
+	if (_idToY(id) >= _deadborder && _idToX(id) <= _sizex - 1 -_deadborder && _idToY(id) <= _sizey - 1 - _deadborder && _idToX(id) >= _deadborder)
+		return (1);
+	else
+		return (0);
 }
 
 int		Maze::_getidwithdir(int id, int dir) {
