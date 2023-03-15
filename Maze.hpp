@@ -2,6 +2,7 @@
 #define MAZE_H
 
 #include "Cell.hpp"
+#include "Dijkstra.hpp"
 #include "Player.hpp"
 #include <vector>
 #include <string>
@@ -25,39 +26,47 @@
 #define WHITE			"\x1b[37m"
 #define RESET			"\x1b[0m"
 
-#define SPEED			500000
-#define MAKE			10000
+#define SPEED			10000
+#define MAKE			0000
 
 class	Maze {
 	public:
 		Maze();
 		Maze(int, int);
-		~Maze(void);
+		~Maze();
 		bool	getmode(void);
-		void	setmode(bool mode);
+		void	setmode(bool);
 		void	settimer(time_t);
 		void	create(void);
 		void	explore(void);
 		int		isinsidemaze(int);
+		void	displayDijkstraTable();
+		void	readDijkstraPath(int, int);
+		void	resetPath();
+		void	resetDijkstraTable();
 
 	private:
-		int					_sizex;
-		int					_sizey;
-		std::vector<Cell>	_content;
-		Player				_player1;
-		bool				_mode;
-		time_t				_timer;
-		int					_deadborder;
-		void 				_display(int id);
-		int					_idToX(int id);
-		int					_idToY(int id);
-		void				_changegroupvalue(int oldvalue, int newvalue);
-		int					_getidwithdir(int id, int dir);
-		int					_finddirwithid(int from, int to);
-		int					_findNextCell(int id, int fromdir);
-		static std::string	_getcolor(int nb);
-		static int			_min(int, int);
-		static int			_max(int, int);
+		int						_sizex;
+		int						_sizey;
+		std::vector<Cell>		_content;
+		Player					_player1;
+		bool					_mode;
+		time_t					_timer;
+		int						_deadborder;
+		std::vector<Dijkstra>	_dijkstraTable;
+		void 					_display(int id);
+		int						_idToX(int id);
+		int						_idToY(int id);
+		void					_changegroupvalue(int oldvalue, int newvalue);
+		int						_getidwithdir(int id, int dir);
+		int						_finddirwithid(int from, int to);
+		int						_depthFirstSearch(int id, int fromdir);
+		int						_dijkstra(int beg, int curNode, int end);
+		void					_addToDijkstraTable(int curNode, int adjNode);
+		int						_findNextNodeToDijkstraVisit();
+		static std::string		_getcolor(int nb);
+		static int				_min(int, int);
+		static int				_max(int, int);
 };
 
 Maze*	newMaze(int, int);

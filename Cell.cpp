@@ -2,15 +2,12 @@
 #include <iostream>
 
 Cell::Cell() : _id(-1), _value(-1), _nbseen(-1), _wallLeft(true), _wallUp(true) {
-	//std::cout <<  "Cell #id : " << _id << " is born" << std::endl;
 }
 
 Cell::Cell(int id, int value, int nb, bool wallLeft, bool wallUp) : _id(id),_value(value), _nbseen(nb), _wallLeft(wallLeft), _wallUp(wallUp) {
-	//std::cout <<  "Cell #id : " << _id << " is born" << std::endl;
 }
 
 Cell::~Cell() {
-	//std::cout <<  "Cell #id : " << _id << " is dead" << std::endl;
 }
 
 int		Cell::getvalue() {
