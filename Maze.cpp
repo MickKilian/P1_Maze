@@ -324,15 +324,13 @@ void	Maze::displayDijkstraTable() {
 	}
 }
 
-void	Maze::readDijkstraPath(int beg, int end) {
-	int	curNode = end;
-
-	while (curNode != beg) {
+void	Maze::readDijkstraPath(int beg, int curNode) {
+	if (curNode != beg) {
+		readDijkstraPath(beg, _dijkstraTable[curNode].getPreviousNode());
 		_content[curNode].setnbseen(_content[curNode].getnbseen() + 1);
-		_display(curNode);
-		usleep(SPEED);
-		curNode = _dijkstraTable[curNode].getPreviousNode();
 	}
+	_display(curNode);
+	usleep(SPEED);
 	_display(curNode);
 }
 

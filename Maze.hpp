@@ -26,7 +26,7 @@
 #define WHITE			"\x1b[37m"
 #define RESET			"\x1b[0m"
 
-#define SPEED			10000
+#define SPEED			100000
 #define MAKE			0000
 
 class	Maze {
