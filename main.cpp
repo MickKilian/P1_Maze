@@ -1,7 +1,7 @@
 #include "Maze.hpp"
 
 int	main() {
-	Maze*	maze = newMaze(15, 15);
+	Maze*	maze = newMaze(12, 12);
 	time_t	startingtime;
 
 	time(&startingtime);

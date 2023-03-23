@@ -11,63 +11,63 @@ Player::Player(std::string name, int id, int cell, int nbcoins, int lives, int m
 Player::~Player() {
 }
 
-std::string	Player::getname() {
+std::string	Player::getName() {
 	return (_name);
 }
 
-int	Player::getid() {
+int	Player::getId() {
 	return (_id);
 }
 
-int	Player::getcell() {
+int	Player::getCell() {
 	return (_cell);
 }
 
-int	Player::getnbcoins() {
+int	Player::getNbCoins() {
 	return (_nbcoins);
 }
 
-int	Player::getlives() {
+int	Player::getLives() {
 	return (_lives);
 }
 
-int	Player::getmode() {
+int	Player::getMode() {
 	return (_mode);
 }
 
-int	Player::getspeed() {
+int	Player::getSpeed() {
 	return (_speed);
 }
 
-int	Player::getstrategy() {
+int	Player::getStrategy() {
 	return (_strategy);
 }
 
-void	Player::setcell(int cell) {
+void	Player::setCell(int cell) {
 	_cell = cell;
 }
 
-void	Player::setid(int id) {
+void	Player::setId(int id) {
 	_id = id;
 }
 
-void	Player::setnbcoins(int nbcoins) {
+void	Player::setNbCoins(int nbcoins) {
 	_nbcoins = nbcoins;
 }
 
-void	Player::setlives(int lives) {
+void	Player::setLives(int lives) {
 	_lives =lives;
 }
 
-void	Player::setmode(int mode) {
+void	Player::setMode(int mode) {
 	_mode = mode;
 }
 
-void	Player::setspeed(int speed) {
+void	Player::setSpeed(int speed) {
 	_speed = speed;
 }
 
-void	Player::setstrategy(int strategy) {
+void	Player::setStrategy(int strategy) {
 	_strategy = strategy;
 }
 

@@ -8,22 +8,22 @@ class	Player {
 		Player();
 		Player(std::string, int, int, int, int, int, int, int);
 		~Player(void);
-		std::string	getname(void);
-		int			getid(void);
-		int			getcell(void);
-		int			getnbcoins(void);
-		int			getlives(void);
-		int			getmode(void);
-		int			getspeed(void);
-		int			getstrategy(void);
-		void		setname(std::string);
-		void		setid(int);
-		void		setcell(int);
-		void		setnbcoins(int);
-		void		setlives(int);
-		void		setmode(int);
-		void		setspeed(int);
-		void		setstrategy(int);
+		std::string	getName(void);
+		int			getId(void);
+		int			getCell(void);
+		int			getNbCoins(void);
+		int			getLives(void);
+		int			getMode(void);
+		int			getSpeed(void);
+		int			getStrategy(void);
+		void		setName(std::string);
+		void		setId(int);
+		void		setCell(int);
+		void		setNbCoins(int);
+		void		setLives(int);
+		void		setMode(int);
+		void		setSpeed(int);
+		void		setStrategy(int);
 		void		display();
 
 	private:

@@ -1,47 +1,56 @@
 #include "Cell.hpp"
 #include <iostream>
 
-Cell::Cell() : _id(-1), _value(-1), _nbseen(-1), _wallLeft(true), _wallUp(true) {
+Cell::Cell() : _id(-1), _value(-1), _nbseen(-1), _status(-1) {
+	_wall[0] = true;
+	_wall[1] = true;
+	_wall[2] = true;
+	_wall[3] = true;
 }
 
-Cell::Cell(int id, int value, int nb, bool wallLeft, bool wallUp) : _id(id),_value(value), _nbseen(nb), _wallLeft(wallLeft), _wallUp(wallUp) {
+Cell::Cell(int id, int value, int nb, int status, bool wall0, bool wall1, bool wall2, bool wall3) :
+	_id(id),_value(value), _nbseen(nb), _status(status) {
+		_wall[0] = wall0;
+		_wall[1] = wall1;
+		_wall[2] = wall2;
+		_wall[3] = wall3;
 }
 
 Cell::~Cell() {
 }
 
-int		Cell::getvalue() {
+int		Cell::getValue() {
 	return (_value);
 }
 
-int		Cell::getnbseen() {
+int		Cell::getNbSeen() {
 	return (_nbseen);
 }
 
-bool	Cell::getwallLeft() {
-	return (_wallLeft);
+int		Cell::getStatus() {
+	return (_status);
 }
 
-bool	Cell::getwallUp() {
-	return (_wallUp);
+bool	Cell::getWall(int dir) {
+	return (_wall[dir]);
 }
 
-void	Cell::setvalue(int value) {
+void	Cell::setValue(int value) {
 	_value = value;
 }
 
-void	Cell::setnbseen(int nb) {
+void	Cell::setNbSeen(int nb) {
 	_nbseen = nb;
 }
 
-void	Cell::setwallLeft(bool wall) {
-	_wallLeft = wall;
+void	Cell::setStatus(int status) {
+	_status = status;
 }
 
-void	Cell::setwallUp(bool wall) {
-	_wallUp = wall;
+void	Cell::setWall(int dir, bool wall) {
+	_wall[dir] = wall;
 }
 
 void	Cell::display() {
-	std::cout <<  "Cell #" << this->_id << "(" << this->_value << "), status(" << this->_nbseen << ") has left wall : " << this->_wallLeft << " and up wall : " << this->_wallUp << "." << std::endl;
+	std::cout <<  "Cell #" << this->_id << "(" << this->_value << "), coin(" << this->_nbseen << " and status(" << this->_status << " )" << std::endl;
 }

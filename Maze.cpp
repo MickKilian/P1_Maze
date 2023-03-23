@@ -7,9 +7,9 @@ Maze::Maze(int sizex, int sizey) : _sizex(sizex), _sizey(sizey) {
 	//std::cout << "A maze of size : " << _sizex << "x" << _sizey << " is being born" << std::endl;
 	_mode = 0;
 	for (int i = 0; i < sizex * sizey; ++i) {
-		_content.push_back(Cell(i , i, false, true, true));
+		_cell.push_back(Cell(i , i, 0, 1, true, true, true, true));
 		_dijkstraTable.push_back(Dijkstra(i , 0, -1, -1, -1, -1));
-//		_content[i]._display();
+//		_cell[i]._display();
 	}
 }
 
@@ -39,21 +39,24 @@ void	Maze::create(void) {
 		//Maze::_display(-1);
 		randcell = rand() % (_sizex * _sizey);
 		randdir = rand() % 2;
-		if (randdir == 0 && _idToX(randcell) != 0 && _content[randcell].getvalue() != _content[randcell - 1].getvalue()) {
+		if (randdir == 0 && _idToX(randcell) != 0 && _cell[randcell].getValue() != _cell[randcell - 1].getValue()) {
 			k--;
-			this->_content[randcell].setnbseen(0);
-			this->_content[randcell].setwallLeft(false);
-			Maze::_changegroupvalue(_max(this->_content[randcell - 1].getvalue(), this->_content[randcell].getvalue()), 
-					_min(this->_content[randcell - 1].getvalue(), this->_content[randcell].getvalue()));
+			this->_cell[randcell].setNbSeen(0);
+			//this->_cell[randcell].setWallLeft(false);
+			this->_cell[randcell].setWall(3, false);
+			Maze::_changeGroupValue(_max(this->_cell[randcell - 1].getValue(), this->_cell[randcell].getValue()), 
+					_min(this->_cell[randcell - 1].getValue(), this->_cell[randcell].getValue()));
 		}
-		else if (randdir == 1 && _idToY(randcell) != 0 && _content[randcell].getvalue() != _content[randcell - _sizex].getvalue()) {
+		else if (randdir == 1 && _idToY(randcell) != 0 && _cell[randcell].getValue() != _cell[randcell - _sizex].getValue()) {
 			k--;
-			this->_content[randcell].setnbseen(0);
-			this->_content[randcell].setwallUp(false);
-			Maze::_changegroupvalue(_max(this->_content[randcell - _sizex].getvalue(), this->_content[randcell].getvalue()), 
-					_min(this->_content[randcell - _sizex].getvalue(), this->_content[randcell].getvalue()));
+			this->_cell[randcell].setNbSeen(0);
+			//this->_cell[randcell].setWallUp(false);
+			this->_cell[randcell].setWall(0, false);
+			Maze::_changeGroupValue(_max(this->_cell[randcell - _sizex].getValue(), this->_cell[randcell].getValue()), 
+					_min(this->_cell[randcell - _sizex].getValue(), this->_cell[randcell].getValue()));
 		}
 	}
+	_fillWalls();
 	Maze::_display(-1);
 	setmode(1);
 }
@@ -65,19 +68,23 @@ void	Maze::_display(int id) {
 	std::string	truecolornumbers;
 	time_t		currenttime;
 
+	_player1.setCell(id);
 	time(&currenttime);
+	_deadborder = difftime(currenttime, _timer) / SHRINK_TIME;
+	_borderPosition = difftime(currenttime, _timer) / SHRINK_TIME;
+	updateStatus();
 	if (_mode)
 		colorgrid = GREEN;
 	else
 		colorgrid = MAGENTA;
-	usleep(MAKE);
+	//usleep(MAKE);
 	std::cout << std::endl;
 	std::cout << std::endl;
 	std::cout << std::endl;
 	for (int j = 0; j < _sizey; ++j) {
 		std::cout << std::setw(2) << " ";
 		for (int i = 0; i < _sizex; ++i) {
-			if (_content[i + j * _sizex].getwallUp() || i < _deadborder || j <= _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
+			if (_cell[i + j * _sizex].getWall(0) || i < _deadborder || j <= _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
 				if (i < _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - _deadborder)
 					truecolorgrid = BLUE;
 				else
@@ -92,7 +99,7 @@ void	Maze::_display(int id) {
 		}
 		std::cout << std::endl;
 		for (int i = 0; i < _sizex; ++i) {
-			if (_content[i + j * _sizex].getwallLeft() || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
+			if (_cell[i + j * _sizex].getWall(3) || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
 				if (i < _deadborder || j < _deadborder || i > _sizex -_deadborder || j > _sizey - 1 - _deadborder)
 					truecolorgrid = BLUE;
 				else
@@ -114,8 +121,8 @@ void	Maze::_display(int id) {
 			if (_mode)
 				colornumbers = BOLDYELLOW;
 			else
-				colornumbers = Maze::_getcolor(_content[i + j * _sizex].getvalue());
-			if (_content[i + j * _sizex].getwallLeft() || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
+				colornumbers = Maze::_getcolor(_cell[i + j * _sizex].getValue());
+			if (_cell[i + j * _sizex].getWall(3) || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
 				if (i < _deadborder || j < _deadborder || i > _sizex -_deadborder || j > _sizey - 1 - _deadborder)
 					truecolorgrid = BLUE;
 				else
@@ -127,21 +134,21 @@ void	Maze::_display(int id) {
 			}
 			if (id != i + j * _sizex) {
 				std::cout << std::setw(1) << " ";
-				if (_content[i + j * _sizex].getnbseen() > 0 && _content[i + j * _sizex].getnbseen() < 4)
+				if (_cell[i + j * _sizex].getNbSeen() > 0 && _cell[i + j * _sizex].getNbSeen() < 4)
 					//std::cout << RED << std::setw(3) << "." << RESET;
 					std::cout << GREEN << std::setw(3) << "." << RESET;
-				else if (_content[i + j * _sizex].getnbseen() >= 4)
-					//std::cout << BOLDYELLOW << std::setw(2) << _content[i + j * _sizex].getvalue() << RESET;
+				else if (_cell[i + j * _sizex].getNbSeen() >= 4)
+					//std::cout << BOLDYELLOW << std::setw(2) << _cell[i + j * _sizex].getValue() << RESET;
 					std::cout << std::setw(3) << "   ";
 				else {
 					if (i < _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder)
 						truecolornumbers = BLUE;
 					else
 						truecolornumbers = colornumbers;
-					if (_content[i + j * _sizex].getvalue() == 0)
+					if (_cell[i + j * _sizex].getValue() == 0)
 						std::cout << truecolornumbers << std::setw(3) << "o" << RESET;
 					else
-						std::cout << truecolornumbers << std::setw(3) << _content[i + j * _sizex].getvalue() << RESET;
+						std::cout << truecolornumbers << std::setw(3) << _cell[i + j * _sizex].getValue() << RESET;
 				}
 				std::cout << std::setw(2) << " ";
 			}
@@ -160,10 +167,10 @@ void	Maze::_display(int id) {
 		if (j == 0)
 			std::cout << colorgrid << std::setw(4) << difftime(currenttime, _timer) << " s" << RESET;
 		if (_mode && j == 1)
-			std::cout << WHITE << std::setw(4) << _player1.getnbcoins() << " point(s)" << RESET;
+			std::cout << WHITE << std::setw(4) << _player1.getNbCoins() << " point(s)" << RESET;
 		std::cout << std::endl;
 		for (int i = 0; i < _sizex; ++i) {
-			if (_content[i + j * _sizex].getwallLeft() || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
+			if (_cell[i + j * _sizex].getWall(3) || i <= _deadborder || j < _deadborder || i > _sizex - 1 -_deadborder || j > _sizey - 1 - _deadborder) {
 				if (i < _deadborder || j < _deadborder || i > _sizex -_deadborder || j > _sizey - 1 - _deadborder)
 					truecolorgrid = BLUE;
 				else
@@ -198,95 +205,123 @@ void	Maze::_display(int id) {
 }
 
 void	Maze::explore(void) {
-	/*int	retid;
+	int	retid;
 
-	retid = 0;
-	while (1) {
+	if (SOLVING_ALGO == 0) {
+		retid = 0;
 		std::cout << "retid : " << retid << std::endl;
 		retid = _depthFirstSearch(retid, -1);
+		std::cout << "Congratulations, player1 has collected " << _player1.getNbCoins() << " coins." << std::endl;
 	}
-	std::cout << "Congratulations, player1 has collected " << _player1.getnbcoins() << " coins." << std::endl;
-	*/
-	//std::cout << "Starting Dijkstra" << std::endl;
-	//std::cout << _dijkstra(0, 0, _sizex * _sizey - 1) << std::endl;
+	else if (SOLVING_ALGO == 1) {
+		std::cout << "Starting Dijkstra" << std::endl;
+		//std::cout << _dijkstra(0, 0, _sizex * _sizey - 1) << std::endl;
+		_dijkstra(0, 0, _sizex - 1);
+		readDijkstraPath(0, _sizex - 1);
+		usleep(SPEED);
+		//resetPath();
+		resetDijkstraTable();
+		_display(_sizex - 1);
+		usleep(SPEED);
 
-	_dijkstra(0, 0, _sizex - 1);
-	readDijkstraPath(0, _sizex - 1);
-	usleep(1000000);
-	resetPath();
-	resetDijkstraTable();
-	_display(_sizex - 1);
-	usleep(1000000);
+		_dijkstra(_sizex - 1, _sizex - 1, _sizex * _sizey - 1);
+		readDijkstraPath(_sizex - 1, _sizex * _sizey - 1);
+		usleep(SPEED);
+		//resetPath();
+		resetDijkstraTable();
+		_display(_sizex * _sizey - 1);
+		usleep(SPEED);
 
-	_dijkstra(_sizex - 1, _sizex - 1, _sizex * _sizey - 1);
-	readDijkstraPath(_sizex - 1, _sizex * _sizey - 1);
-	usleep(1000000);
-	resetPath();
-	resetDijkstraTable();
-	_display(_sizex * _sizey - 1);
-	usleep(1000000);
+		_dijkstra(_sizex * _sizey - 1, _sizex * _sizey - 1, (_sizex * _sizey) - _sizex);
+		readDijkstraPath(_sizex * _sizey - 1, _sizex * _sizey - _sizex);
+		usleep(SPEED);
+		//resetPath();
+		resetDijkstraTable();
+		_display(_sizex * _sizey - _sizex);
+		usleep(SPEED);
 
-	_dijkstra(_sizex * _sizey - 1, _sizex * _sizey - 1, (_sizex * _sizey) - _sizex);
-	readDijkstraPath(_sizex * _sizey - 1, _sizex * _sizey - _sizex);
-	usleep(1000000);
-	resetPath();
-	resetDijkstraTable();
-	_display(_sizex * _sizey - _sizex);
-	usleep(1000000);
+		_dijkstra(_sizex * _sizey - _sizex, _sizex * _sizey - _sizex, 0);
+		readDijkstraPath(_sizex * _sizey - _sizex, -1);
+	}
+	else if (SOLVING_ALGO == 2) {
+		borderDijkstra(_player1.getCell(), 1);
+		borderDijkstra(_player1.getCell(), 1);
+		borderDijkstra(_player1.getCell(), 1);
+		borderDijkstra(_player1.getCell(), 1);
+	}
+}
 
-	_dijkstra(_sizex * _sizey - _sizex, _sizex * _sizey - _sizex, 0);
-	readDijkstraPath(_sizex * _sizey - _sizex, -1);
+int	Maze::borderDijkstra(int start, bool rotation) {
+	int	end;
+	int	middleX;
+	int	middleY;
+	int	quadrant;	//0: top-left, 1: top-right, 2: bottom-right, 3: bottom-left
+	int	mul;
+	int	inc;
+
+	middleX = _sizex / 2;
+	middleY = _sizey / 2;
+	quadrant = (middleY - _idToY(start) < 0) * (2 + (middleX - _idToX(start) > 0)) + (middleY - _idToY(start) > 0) * (middleX - _idToX(start) < 0);
+	switch (quadrant) {
+		case 0:
+			end = rotation * _XYToId(_sizex - 1, _idToY(start)) + !rotation * _XYToId(_idToX(start), _sizey - 1);
+			mul = 1;
+			inc = rotation + !rotation * _sizex;
+			break;
+		case 1:
+			end = rotation * _XYToId(_idToX(start), _sizey - 1) + !rotation * _XYToId(_sizex - 1, _idToY(start));
+			mul = 1;
+			inc = rotation * _sizex + !rotation;
+			break;
+		case 2:
+			end = rotation * _XYToId(0, _idToY(start)) + !rotation * _XYToId(_idToX(start), 0);
+			mul = -1;
+			inc = rotation + !rotation * _sizex;
+			break;
+		case 3:
+			end = rotation * _XYToId(_idToX(start), 0) + !rotation * _XYToId(0, _idToY(start));
+			mul = -1;
+			inc = rotation * _sizex + !rotation;
+			break;
+	}
+	for (int id = start; mul * id < mul * end; id += ((mul > 0) - (mul < 0)) * inc) {
+		//while (mul * (id + mul * inc) < mul * end && (_cell[id + mul * inc].getNbSeen() == 4 || _dijkstra(id, id, id + mul * inc) > 15)) {
+		while (mul * (id + mul * inc) < mul * end && _cell[id + mul * inc].getNbSeen() == 4) {
+			//resetDijkstraTable();
+			mul = mul + (mul > 0) - (mul < 0);
+		}
+		if (id + mul * inc == end && _cell[id + mul * inc].getNbSeen() == 4)
+			break;
+		_dijkstra(id, id, id + mul * inc);
+		readDijkstraPath(id, id + mul * inc);
+		resetDijkstraTable();
+		_display(id + mul * inc);
+		if (id + mul * inc == end)
+			break;
+		id += (mul - (mul > 0) + (mul < 0)) * inc;
+		mul = (mul > 0) - (mul < 0);
+	}
+	return 0;
 }
 
 int Maze::_dijkstra(int beg, int curNode, int end)
 {
 	int	adjNode;
-
 	if (beg == curNode)
 		_dijkstraTable[beg].setF(0);;
 	// procedure based on Dijkstra algorithm to find shortest path between beg and end
 	// fill dijkstra table until end node is found
-	/*
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << "current node : " << curNode << std::endl << std::endl;;
-	displayDijkstraTable();
-	*/
-	//_content[curNode].setnbseen(_content[curNode].getnbseen() + 1);
-	//_display(curNode);
 	if (curNode != end) {
-		//usleep (1000000);
-		// try UP
-					if (!_content[curNode].getwallUp()) {
-						adjNode = _getidwithdir(curNode, 0);
+		for (int dir = 0; dir < 4; ++dir) {
+					if (!_cell[curNode].getWall(dir % 4)) {
+						adjNode = _getIdWithDir(curNode, dir % 4);
 						_addToDijkstraTable(curNode, adjNode);
 					}
-		// try RIGHT
-					if ((_idToX(curNode) != _sizex - 1) && !_content[_getidwithdir(curNode, 1)].getwallLeft()) {
-						adjNode = _getidwithdir(curNode, 1);
-						_addToDijkstraTable(curNode, adjNode);
-					}
-		// try DOWN
-					if ((_idToY(curNode) != _sizey - 1) && !_content[_getidwithdir(curNode, 2)].getwallUp()) {
-						adjNode = _getidwithdir(curNode, 2);
-						_addToDijkstraTable(curNode, adjNode);
-					}
-		// try LEFT
-					if (!_content[curNode].getwallLeft()) {
-						adjNode = _getidwithdir(curNode, 3);
-						_addToDijkstraTable(curNode, adjNode);
-					}
+		}
 		_dijkstraTable[curNode].setStatus(1);
-		//std::cout << std::endl;
 		_dijkstra(beg, _findNextNodeToDijkstraVisit(), end);
 	}
-	return (0);
+	return (countDijkstraPath(beg, end));
 }
 
 int		Maze::_findNextNodeToDijkstraVisit() {
@@ -305,13 +340,10 @@ int		Maze::_findNextNodeToDijkstraVisit() {
 void	Maze::_addToDijkstraTable(int curNode, int adjNode) {
 	int	g = _dijkstraTable[curNode].getF();
 
-	//std::cout << "adjacent node : " << adjNode << std::endl;
-	//std::cout << "   previous f value : " << _dijkstraTable[adjNode].getF() << std::endl;
 	if (_dijkstraTable[adjNode].getF() == -1 || _dijkstraTable[adjNode].getF() > g + 1) {
 		_dijkstraTable[adjNode].setF(g + 1);
 		_dijkstraTable[adjNode].setPreviousNode(curNode);
 	}
-	//std::cout << "   new f value : " << _dijkstraTable[adjNode].getF() << std::endl;
 }
 
 void	Maze::displayDijkstraTable() {
@@ -324,19 +356,30 @@ void	Maze::displayDijkstraTable() {
 	}
 }
 
+int	Maze::countDijkstraPath(int beg, int curNode) {
+	if (curNode == beg)
+		return (0);
+	else
+		return (1 + countDijkstraPath(beg, _dijkstraTable[curNode].getPreviousNode()));
+}
+
 void	Maze::readDijkstraPath(int beg, int curNode) {
 	if (curNode != beg) {
 		readDijkstraPath(beg, _dijkstraTable[curNode].getPreviousNode());
-		_content[curNode].setnbseen(_content[curNode].getnbseen() + 1);
+		if (_cell[curNode].getNbSeen() == 0)
+			_player1.setNbCoins(_player1.getNbCoins() + 1);
+		_cell[curNode].setNbSeen(4);
 	}
-	_display(curNode);
+	if (_cell[curNode].getNbSeen() == 0)
+		_player1.setNbCoins(_player1.getNbCoins() + 1);
+	_cell[curNode].setNbSeen(4);
 	usleep(SPEED);
 	_display(curNode);
 }
 
 void	Maze::resetPath() {
 	for (int i = 0; i < _sizex * _sizey; ++i) {
-		_content[i].setnbseen(0);
+		_cell[i].setNbSeen(0);
 	}
 }
 
@@ -352,77 +395,66 @@ void	Maze::resetDijkstraTable() {
 }
 
 int	Maze::_depthFirstSearch(int id, int fromdir) {
-	time_t		currenttime;
+	//time_t		currenttime;
 	bool		cont = true;
 	int			lastid = 0;
 
-	time(&currenttime);
-	_deadborder = difftime(currenttime, _timer) / 20;
-	_content[id].setnbseen(_content[id].getnbseen() + 1);
-	if (_content[id].getnbseen() == 1)
-		_player1.setnbcoins(_player1.getnbcoins() + 1);
+	//time(&currenttime);
+	//_deadborder = difftime(currenttime, _timer) / SHRINK_TIME;
+	//_borderPosition = difftime(currenttime, _timer) / SHRINK_TIME;
+	_cell[id].setNbSeen(_cell[id].getNbSeen() + 1);
+	if (_cell[id].getNbSeen() == 1)
+		_player1.setNbCoins(_player1.getNbCoins() + 1);
 	_display(id);
 	usleep(SPEED);
 	while (cont) {
-		// try Right
-		if (isinsidemaze(id) && fromdir != 1 && _idToX(id) < _sizex - 1 -_deadborder && !_content[_getidwithdir(id, 1)].getwallLeft()) {
-			_depthFirstSearch(_getidwithdir(id, 1), 3);
-			if (!isinsidemaze(id)) {
-				lastid = id;
-				break;
+		for (int dir = 1; dir < 5; ++dir) {
+			if (isInAllowedMaze(id) && isInAllowedMaze(_getIdWithDir(id, dir % 4)) && fromdir != (dir % 4) && !_cell[id].getWall(dir % 4)) {
+				_depthFirstSearch(_getIdWithDir(id, dir % 4), (dir + 2) % 4);
+				if (!isInAllowedMaze(id)) {
+					lastid = id;
+					cont = false;
+					break;
+				}
+				_cell[id].setNbSeen(_cell[id].getNbSeen() + 1);
+				_display(id);
+				usleep(SPEED);
 			}
-			_content[id].setnbseen(_content[id].getnbseen() + 1);
-			_display(id);
-			usleep(SPEED);
 		}
-		// try Down
-		if (isinsidemaze(id) && fromdir != 2 && _idToY(id) < _sizey - 1 - _deadborder && !_content[_getidwithdir(id, 2)].getwallUp()) {
-			_depthFirstSearch(_getidwithdir(id, 2), 0);
-			if (!isinsidemaze(id)) {
-				lastid = id;
-				break;
-			}
-			_content[id].setnbseen(_content[id].getnbseen() + 1);
-			_display(id);
-			usleep(SPEED);
-		}
-		// try Left
-		if (isinsidemaze(id) && fromdir != 3 && _idToX(id) > _deadborder && !_content[id].getwallLeft()) {
-			_depthFirstSearch(_getidwithdir(id, 3), 1);
-			if (!isinsidemaze(id)) {
-				lastid = id;
-				break;
-			}
-			_content[id].setnbseen(_content[id].getnbseen() + 1);
-			_display(id);
-			usleep(SPEED);
-		}
-		// try Up
-		if (isinsidemaze(id) && fromdir != 0 && _idToY(id) > _deadborder && !_content[id].getwallUp()) {
-			_depthFirstSearch(_getidwithdir(id, 0), 2);
-			if (!isinsidemaze(id)) {
-				lastid = id;
-				break;
-			}
-			_content[id].setnbseen(_content[id].getnbseen() + 1);
-			_display(id);
-			usleep(SPEED);
-		}
-		//_display(_getidwithdir(id, fromdir));
-		_content[id].setnbseen(4);
+		//_display(_getIdWithDir(id, fromdir));
+		if (cont == true)
+			_cell[id].setNbSeen(4);
 		cont = false;
 	}
 	return (lastid);
 }
 
-int		Maze::isinsidemaze(int id) {
+/*int		Maze::isInAllowedMaze(int id) {
 	if (_idToY(id) >= _deadborder && _idToX(id) <= _sizex - 1 -_deadborder && _idToY(id) <= _sizey - 1 - _deadborder && _idToX(id) >= _deadborder)
+		return (1);
+	else
+		return (0);
+}*/
+
+int		Maze::isInAllowedMaze(int id) {
+	updateStatus();
+	if (_cell[id].getStatus())
 		return (1);
 	else
 		return (0);
 }
 
-int		Maze::_getidwithdir(int id, int dir) {
+int		Maze::updateStatus() {
+	for (int id = 0; id < _sizex * _sizey; ++id) {
+		if (_idToX(id) + 1 < _borderPosition || _sizex - _idToX(id) < _borderPosition || _idToY(id) + 1 < _borderPosition || _sizey - _idToY(id) < _borderPosition)
+			this->_cell[id].setStatus(0);
+		else
+			this->_cell[id].setStatus(1);
+	}
+	return (0);
+}
+
+int		Maze::_getIdWithDir(int id, int dir) {
 	// find id on adjacent node depending on direction:
 	// 0. up
 	// 1. right
@@ -446,7 +478,7 @@ int		Maze::_getidwithdir(int id, int dir) {
 	}
 }
 
-int		Maze::_finddirwithid(int from, int to) {
+int		Maze::_finDirWithId(int from, int to) {
 	if (to == from - _sizex)
 		return (0);
 	else if (to == from + 1)
@@ -467,11 +499,28 @@ int		Maze::_idToY(int id) {
 	return (id / _sizex);
 }
 
-void 	Maze::_changegroupvalue(int oldvalue, int newvalue) {
+int		Maze::_XYToId(int x, int y) {
+	return (x + y * _sizex);
+}
+
+void	Maze::_changeGroupValue(int oldvalue, int newvalue) {
 	for (int i = 0; i < _sizex * _sizey; ++i) {
-		if (this->_content[i].getvalue() == oldvalue) {
-			this->_content[i].setvalue(newvalue);
+		if (this->_cell[i].getValue() == oldvalue) {
+			this->_cell[i].setValue(newvalue);
 		}
+	}
+}
+
+void	Maze::_fillWalls() {
+	for (int id = 0; id < _sizex * _sizey; ++id) {
+		if (_idToX(id) < _sizex - 1)
+			_cell[id].setWall(1, _cell[id + 1].getWall(3));
+		else
+			_cell[id].setWall(1, true);
+		if (_idToY(id) < _sizey - 1)
+			_cell[id].setWall(2, _cell[id + _sizex].getWall(0));
+		else
+			_cell[id].setWall(2, true);
 	}
 }
 

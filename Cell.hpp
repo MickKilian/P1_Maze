@@ -6,24 +6,24 @@
 class	Cell {
 	public:
 		Cell();
-		Cell(int, int, int, bool, bool);
+		Cell(int, int, int, int, bool, bool, bool, bool);
 		~Cell();
-		int		getvalue();
-		int		getnbseen();
-		bool	getwallLeft();
-		bool	getwallUp();
-		void	setvalue(int value);
-		void	setnbseen(int nb);
-		void	setwallLeft(bool wall);
-		void	setwallUp(bool wall);
+		int		getValue();
+		int		getNbSeen();
+		int		getStatus();
+		bool	getWall(int dir);
+		void	setValue(int value);
+		void	setNbSeen(int nb);
+		void	setStatus(int status);
+		void	setWall(int dir, bool wall);
 		void	display();
 
 	private:
 		int		_id;
 		int		_value;
 		int		_nbseen;
-		bool	_wallLeft;
-		bool	_wallUp;
+		int		_status;
+		bool	_wall[4];
 };
 
 #endif // CELL_H
