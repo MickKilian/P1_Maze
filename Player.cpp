@@ -1,5 +1,4 @@
 #include "Player.hpp"
-#include <iostream>
 
 Player::Player() : _name("player"), _id(0), _cell(0), _nbcoins(0), _lives(0), _mode(0), _speed(1), _strategy(1) {
 }
@@ -13,6 +12,14 @@ Player::~Player() {
 
 std::string	Player::getName() {
 	return (_name);
+}
+
+double	Player::getX() {
+	return (_x);
+}
+
+double	Player::getY() {
+	return (_y);
 }
 
 int	Player::getId() {
@@ -47,6 +54,14 @@ void	Player::setCell(int cell) {
 	_cell = cell;
 }
 
+void	Player::setX(double x) {
+	_x = x;
+}
+
+void	Player::setY(double y) {
+	_y = y;
+}
+
 void	Player::setId(int id) {
 	_id = id;
 }
@@ -69,12 +84,4 @@ void	Player::setSpeed(int speed) {
 
 void	Player::setStrategy(int strategy) {
 	_strategy = strategy;
-}
-
-void	Player::display() {
-	std::cout <<  "Player #" << this->_id << "(" << this->_name <<
-		") - nbpoints(" << this->_nbcoins <<
-		"), lives( " << this->_lives <<
-		"), speed( " << this->_speed <<
-		std::endl;
 }

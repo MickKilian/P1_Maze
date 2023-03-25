@@ -216,7 +216,7 @@ void	Maze::explore(void) {
 	else if (SOLVING_ALGO == 1) {
 		std::cout << "Starting Dijkstra" << std::endl;
 		//std::cout << _dijkstra(0, 0, _sizex * _sizey - 1) << std::endl;
-		_dijkstra(0, 0, _sizex - 1);
+		_dijkstra(0, _sizex - 1);
 		readDijkstraPath(0, _sizex - 1);
 		usleep(SPEED);
 		//resetPath();
@@ -224,7 +224,7 @@ void	Maze::explore(void) {
 		_display(_sizex - 1);
 		usleep(SPEED);
 
-		_dijkstra(_sizex - 1, _sizex - 1, _sizex * _sizey - 1);
+		_dijkstra(_sizex - 1, _sizex * _sizey - 1);
 		readDijkstraPath(_sizex - 1, _sizex * _sizey - 1);
 		usleep(SPEED);
 		//resetPath();
@@ -232,7 +232,7 @@ void	Maze::explore(void) {
 		_display(_sizex * _sizey - 1);
 		usleep(SPEED);
 
-		_dijkstra(_sizex * _sizey - 1, _sizex * _sizey - 1, (_sizex * _sizey) - _sizex);
+		_dijkstra(_sizex * _sizey - 1, (_sizex * _sizey) - _sizex);
 		readDijkstraPath(_sizex * _sizey - 1, _sizex * _sizey - _sizex);
 		usleep(SPEED);
 		//resetPath();
@@ -240,7 +240,7 @@ void	Maze::explore(void) {
 		_display(_sizex * _sizey - _sizex);
 		usleep(SPEED);
 
-		_dijkstra(_sizex * _sizey - _sizex, _sizex * _sizey - _sizex, 0);
+		_dijkstra(_sizex * _sizey - _sizex, 0);
 		readDijkstraPath(_sizex * _sizey - _sizex, -1);
 	}
 	else if (SOLVING_ALGO == 2) {
@@ -285,14 +285,12 @@ int	Maze::borderDijkstra(int start, bool rotation) {
 			break;
 	}
 	for (int id = start; mul * id < mul * end; id += ((mul > 0) - (mul < 0)) * inc) {
-		//while (mul * (id + mul * inc) < mul * end && (_cell[id + mul * inc].getNbSeen() == 4 || _dijkstra(id, id, id + mul * inc) > 15)) {
 		while (mul * (id + mul * inc) < mul * end && _cell[id + mul * inc].getNbSeen() == 4) {
-			//resetDijkstraTable();
 			mul = mul + (mul > 0) - (mul < 0);
 		}
 		if (id + mul * inc == end && _cell[id + mul * inc].getNbSeen() == 4)
 			break;
-		_dijkstra(id, id, id + mul * inc);
+		_dijkstra(id, id + mul * inc);
 		readDijkstraPath(id, id + mul * inc);
 		resetDijkstraTable();
 		_display(id + mul * inc);
@@ -304,11 +302,14 @@ int	Maze::borderDijkstra(int start, bool rotation) {
 	return 0;
 }
 
-int Maze::_dijkstra(int beg, int curNode, int end)
+int Maze::_dijkstra(int beg, int end, int curNode)
 {
 	int	adjNode;
-	if (beg == curNode)
+
+	if (curNode == -1) {
+		curNode = beg;
 		_dijkstraTable[beg].setF(0);;
+	}
 	// procedure based on Dijkstra algorithm to find shortest path between beg and end
 	// fill dijkstra table until end node is found
 	if (curNode != end) {
@@ -319,7 +320,7 @@ int Maze::_dijkstra(int beg, int curNode, int end)
 					}
 		}
 		_dijkstraTable[curNode].setStatus(1);
-		_dijkstra(beg, _findNextNodeToDijkstraVisit(), end);
+		_dijkstra(beg, end, _findNextNodeToDijkstraVisit());
 	}
 	return (countDijkstraPath(beg, end));
 }

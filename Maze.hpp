@@ -4,6 +4,7 @@
 #include "Cell.hpp"
 #include "Dijkstra.hpp"
 #include "Player.hpp"
+#include "Path.hpp"
 #include <vector>
 #include <string>
 #include <cstdlib>
@@ -69,7 +70,7 @@ class	Maze {
 		int						_getIdWithDir(int id, int dir);
 		int						_finDirWithId(int from, int to);
 		int						_depthFirstSearch(int id, int fromdir);
-		int						_dijkstra(int beg, int curNode, int end);
+		int						_dijkstra(int, int, int = -1);
 		void					_addToDijkstraTable(int curNode, int adjNode);
 		int						_findNextNodeToDijkstraVisit();
 		static std::string		_getcolor(int nb);

@@ -19,6 +19,10 @@ Cell::Cell(int id, int value, int nb, int status, bool wall0, bool wall1, bool w
 Cell::~Cell() {
 }
 
+int		Cell::getId() {
+	return (_id);
+}
+
 int		Cell::getValue() {
 	return (_value);
 }
@@ -35,6 +39,10 @@ bool	Cell::getWall(int dir) {
 	return (_wall[dir]);
 }
 
+void	Cell::setId(int id) {
+	_id = id;
+}
+
 void	Cell::setValue(int value) {
 	_value = value;
 }
@@ -49,8 +57,4 @@ void	Cell::setStatus(int status) {
 
 void	Cell::setWall(int dir, bool wall) {
 	_wall[dir] = wall;
-}
-
-void	Cell::display() {
-	std::cout <<  "Cell #" << this->_id << "(" << this->_value << "), coin(" << this->_nbseen << " and status(" << this->_status << " )" << std::endl;
 }

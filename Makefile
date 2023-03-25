@@ -6,7 +6,7 @@
 #    By: mbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/24 00:51:30 by mbourgeo          #+#    #+#              #
-#    Updated: 2023/03/15 01:35:57 by mbourgeo         ###   ########.fr        #
+#    Updated: 2023/03/25 07:18:12 by mbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CC			= clang++
 
 CFLAGS		= -Wall -Wextra -Werror -std=c++98
 
-SRCS	 	= Maze.cpp Cell.cpp Dijkstra.cpp Player.cpp main.cpp
+SRCS	 	= Maze.cpp Cell.cpp Dijkstra.cpp Player.cpp Path.cpp Game.cpp main.cpp
 
 OBJS		= $(SRCS:.cpp=.o)
 
