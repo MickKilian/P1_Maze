@@ -1,15 +1,14 @@
-#include "Maze.hpp"
+#include "Game.hpp"
 
 int	main() {
-	Maze*	maze = newMaze(12, 12);
-	time_t	startingtime;
+	Game*	game = new Game();
 
-	time(&startingtime);
-	maze->settimer(startingtime);
-	maze->create();
-	time(&startingtime);
-	maze->settimer(startingtime);
-	maze->explore();
-	delete maze;
+	game->setMaze(game->getMaze().create());
+	game->display();
+
+	game->setMode(1);
+	game->explore();
+	//game->display();
+	delete game;
 	return 0;
 }
