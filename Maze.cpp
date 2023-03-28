@@ -195,7 +195,7 @@ int	Maze::countDijkstraPath(int beg, int curNode) {
 		return (1 + countDijkstraPath(beg, _dijkstraTable[curNode].getPreviousNode()));
 }
 
-Route	Maze::readDijkstraPath(int beg, int curNode, Route route) {
+Route*	Maze::readDijkstraPath(int beg, int curNode, Route* route) {
 	if (curNode != beg) {
 		readDijkstraPath(beg, _dijkstraTable[curNode].getPreviousNode(), route);
 		if (_cell[curNode].getNbSeen() == 0)
@@ -205,11 +205,9 @@ Route	Maze::readDijkstraPath(int beg, int curNode, Route route) {
 	if (_cell[curNode].getNbSeen() == 0)
 		_nbCollectedCoins++;
 	_cell[curNode].setNbSeen(4);
-	std::cout << curNode << ", ";
-	route.getCell().push_back(curNode);
-	std::cout << "route : " << route.getCell()[0] << ", ";
 	//usleep(SPEED);
 	////_display(curNode);
+	(*route).addCell(curNode);
 	return (route);
 }
 
@@ -228,6 +226,19 @@ void	Maze::resetDijkstraTable() {
 		_dijkstraTable[i].setH(-1);
 		_dijkstraTable[i].setPreviousNode(-1);
 	}
+}
+
+Route	Maze::findRoute(int start, int finish) {
+	Route	route;
+
+	route = Route();
+	dijkstra(start, finish);
+	readDijkstraPath(start, finish, &route);
+//	_player[0].setRoute(route);
+//	std::cout << "Displaying route : " << std::endl;
+//	_player[0].getRoute().display();
+	resetDijkstraTable();
+	return (route);
 }
 
 /*int	Maze::depthFirstSearch(int id, int fromdir) {

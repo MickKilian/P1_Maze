@@ -3,19 +3,15 @@
 Step::Step() {
 }
 
-Step::Step(double x, double y, double angle, double speed, time_t time) :
-	_x(x), _y(y), _orientation(angle), _speed(speed), _time(time) {
+Step::Step(Point point, double angle, double speed, time_t time) :
+	_point(point), _orientation(angle), _speed(speed), _time(time) {
 }
 
 Step::~Step() {
 }
 
-double	Step::getX() {
-	return (_x);
-}
-
-double	Step::getY() {
-	return (_y);
+Point	Step::getPoint() {
+	return (_point);
 }
 
 double	Step::getOrientation() {
@@ -28,4 +24,8 @@ double	Step::getSpeed() {
 
 int	Step::getTime() {
 	return (_time);
+}
+
+void	Step::setPoint(Point point) {
+	_point = point;
 }

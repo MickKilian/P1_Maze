@@ -6,7 +6,7 @@
 #    By: mbourgeo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/24 00:51:30 by mbourgeo          #+#    #+#              #
-#    Updated: 2023/03/27 08:52:26 by mbourgeo         ###   ########.fr        #
+#    Updated: 2023/03/28 06:22:28 by mbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CFLAGS		= -Wall -Wextra -Werror -std=c++98 -g
 #			  DepthSearchFirst.cpp Dijkstra.cpp Display.cpp Utils.cpp main.cpp
 
 SRCS	 	= Game.cpp Maze.cpp Cell.cpp Player.cpp Route.cpp Path.cpp Utils.cpp Step.cpp \
-			  Dijkstra.cpp main.cpp
+			  Dijkstra.cpp Point.cpp Action.cpp Movement.cpp main.cpp
 
 OBJS		= $(SRCS:.cpp=.o)
 

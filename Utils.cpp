@@ -44,6 +44,26 @@ double Utils::max(double a, double b) {
 		return (b);
 }
 
+double	Utils::dist(Point a, Point b) {
+	return (sqrt(pow(b.getX() - a.getX(), 2.0) + pow(b.getY() - a.getY(), 2.0)));
+}
+
+double	Utils::abAngle(Point a, Point b) {
+	return (atan2(b.getY() - a.getY(), b.getX() - a.getX()) * 180 / M_PI);
+}
+
+bool	Utils::samePoints(Point a, Point b, double tolerance) {
+	return (dist(a, b) < tolerance);
+}
+
+double	Utils::modulo360(double angle) {
+	if (angle < -180)
+		return (angle + 360);
+	else if (angle > 180)
+		return (angle - 360);
+	return (angle);
+}
+
 double	Utils::cellIdToX(int id, int sizex) {
 	return (id % sizex);
 }
@@ -95,6 +115,14 @@ int	Utils::findDirWithId(int from, int to, int sizex) {
 		return (3);
 	else
 		return (-1);
+}
+
+Point	Utils::cellIdToPoint(int id, int sizex) {
+	return (Point(cellIdToX(id, sizex), cellIdToY(id, sizex)));
+}
+
+int	Utils::pointToCellId(Point point, int sizex) {
+	return (xyToCellId(point.getX(), point.getY(), sizex));
 }
 
 void	Utils::printInColor(int width, std::string text, std::string textColor, std::string backColor) {

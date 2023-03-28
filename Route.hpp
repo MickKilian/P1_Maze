@@ -1,16 +1,17 @@
 #ifndef ROUTE_H
 #define ROUTE_H
 
-//#include "Utils.hpp"
 #include <vector>
 #include <iostream>
 
 class	Route {
 	public:
 		Route();
+		Route(int);
 		~Route();
 		std::vector<int>	getCell();
 		void				setCurCell(int);
+		void				addCell(int);
 		void				display();
 
 	private:

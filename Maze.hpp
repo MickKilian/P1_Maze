@@ -7,7 +7,7 @@
 #include "Dijkstra.hpp"
 #include <vector>
 #include <string>
-#include <cstdlib>
+#include <cstdlib>		//rand
 #include <iomanip>
 #include <unistd.h>
 #include <time.h>		//time_t, struct tm, difftime, time, mktime
@@ -28,10 +28,11 @@ class	Maze {
 		void				displayDijkstraTable();
 		int					countDijkstraPath(int, int);
 		void				resetDijkstraTable();
-		Route				readDijkstraPath(int, int, Route);
+		Route*				readDijkstraPath(int, int, Route*);
 		int					dijkstra(int, int, int = -1);
 		void				addToDijkstraTable(int, int);
 		int					findNextNodeToDijkstraVisit();
+		Route				findRoute(int, int);
 //		int					depthFirstSearch(int, int = 0);
 
 	private:

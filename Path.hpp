@@ -1,16 +1,21 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include "Step.hpp"
+#include "Point.hpp"
 #include <vector>
+#include <iostream>
 
 class	Path {
 	public:
 		Path();
+		Path(Point);
 		~Path(void);
+		std::vector<Point>	getPoint();
+		void				addPoint(Point);
+		void				display();
 
 	private:
-		std::vector<Step>	_step;
+		std::vector<Point>	_point;
 };
 
 #endif // PATH_H

@@ -3,6 +3,7 @@
 
 #include "Maze.hpp"
 #include "Route.hpp"
+#include "Point.hpp"
 #include <string>
 #include <iostream>
 #include <cmath>		//math library
@@ -24,16 +25,25 @@
 #define	WHITE			"\x1b[37m"
 #define	RESET			"\x1b[0m"
 
+# define M_PI			3.14159265358979323846  /* pi */
+# define CLOSE_ENOUGH	1	//dist in mm under which 2 points are considered equal
+
 class	Utils {
 	public:
-		static std::string		getColor(int nb);
+		static std::string		getColor(int);
 		static double			min(double, double);
 		static double			max(double, double);
+		static double			dist(Point, Point);
+		static double			abAngle(Point, Point);
+		static bool				samePoints(Point, Point, double);
+		static double			modulo360(double);
 		static int				xyToCellId(double, double, int);
 		static double			cellIdToX(int, int);
 		static double			cellIdToY(int, int);
 		static int				getIdWithDir(int, int, int);
 		static int				findDirWithId(int, int, int);
+		static Point			cellIdToPoint(int, int);
+		static int				pointToCellId(Point, int);
 		static void				printInColor(int, std::string = " ", std::string = BLACK, std::string = BACKBLACK);
 
 	private:
